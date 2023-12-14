@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id                       Int            @id @default(autoincrement())
+  university_email         String         @unique
+  first_name               String
+  last_name                String
+  password                 String
+  uid                      String         @unique
+  batch                    Int?
+  course                   String?
+  stream                   String?
+  has_gap_year             Boolean?
+  personal_email           String?        @unique
+  contact_number           String?
+  alternate_contact_number String?
+  current_address          String?
+  permanent_address        String?
+  current_cgpa             Float?
+  matric_result            Float?
+  hsc_result               Float?
+  number_of_backlogs       Int?
+  has_matric_attachment    Boolean        @default(false)
+  has_hsc_attachment       Boolean        @default(false)
+  has_resume1_attachment   Boolean        @default(false)
+  has_resume2_attachment   Boolean        @default(false)
+  has_resume3_attachment   Boolean        @default(false)
+  has_pfp_attachment       Boolean        @default(false)
+  role                     Role           @default(STUDENT)
+  created_at               DateTime       @default(now())
+  drives                   StudentDrive[] @relation("student-drive")
+}
+
+model PlacementDrive {
+  id                         Int            @id @default(autoincrement())
+  batch_required             Int
+  type_of_drive              String
+  positions                  String[]
+  stream_required            String
+  job_profile                String
+  job_location               String
+  pay_package                String
+  bond                       String?
+  skills_required            String[]
+  placement_process          String
+  created_at                 DateTime       @default(now())
+  closes_at                  DateTime
+  date_of_drive              DateTime
+  allowed_backlogs           Int
+  current_cgpa_cutoff        Float
+  hsc_result_cutoff          Float
+  matric_result_cutoff       Float
+  other_eligibility_criteria String?
+  company_about              String?
+  company_name               String         @unique
+  company_website            String?
+  drive_name                 String
+  has_logo_attachment        Boolean        @default(false)
+  has_jd_attachment          Boolean        @default(false)
+  participants               StudentDrive[] @relation("participants")
+}
+
+model StudentDrive {
+  id                Int            @id @default(autoincrement())
+  student_id        Int
+  selected_resume   String
+  selected_position String
+  drive_id          Int
+  created_at        DateTime       @default(now())
+  drive             PlacementDrive @relation("participants", fields: [drive_id], references: [id])
+  student           Student           @relation("student-drive", fields: [student_id], references: [id])
+}
+
+model University {
+  id                  Int      @id @default(autoincrement())
+  email               String   @unique
+  password            String
+  name                String
+  about               String?
+  website             String?
+  role                Role     @default(UNIVERSITY)
+  has_logo_attachment Boolean  @default(false)
+  created_at          DateTime @default(now())
+}
+
+enum Role {
+  STUDENT
+  UNIVERSITY
+}
