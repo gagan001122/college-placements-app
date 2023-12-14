@@ -48,7 +48,15 @@ const DriveTab = ({ drive }: DriveProps) => {
 };
 
 export default async function Drives() {
-  let drives = await getAllPlacementDrives();
+  let drives = await prisma.placementDrive.findMany({
+    select: {
+      id: true,
+      drive_name: true,
+      company_name: true,
+      created_at: true,
+      _count: { select: { participants: true } },
+    },
+  });
   if (drives.length == 0) {
     return (
       <div className="flex flex-col m-10 items-center h-screen bg-third p-5 rounded-lg shadow-xl justify-center text-lg font-light">
