@@ -1,9 +1,6 @@
 import prisma from "@/prisma/PrismaClient";
-import { cache } from "react";
 
-export const revalidate = 600;
-
-export const getAllPlacementDrives = cache(async () => {
+export const getAllPlacementDrives = async () => {
   let drives = await prisma.placementDrive.findMany({
     select: {
       id: true,
@@ -14,9 +11,9 @@ export const getAllPlacementDrives = cache(async () => {
     },
   });
   return drives;
-});
+};
 
-export const getPlacementDrive = cache(async (id: number) => {
+export const getPlacementDrive = (async (id: number) => {
   let drive = await prisma.placementDrive.findFirst({
     where: { id: id },
     include: {
@@ -26,7 +23,7 @@ export const getPlacementDrive = cache(async (id: number) => {
   return drive;
 });
 
-export const getRecentPlacementDrives = cache(async () => {
+export const getRecentPlacementDrives = (async () => {
   let recentDrives = await prisma.placementDrive.findMany({
     orderBy: {
       created_at: "desc",
